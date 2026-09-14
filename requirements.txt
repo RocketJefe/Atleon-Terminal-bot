@@ -1,0 +1,5 @@
+python-telegram-bot>=20.8
+git+https://github.com/Lu-Yi-Hsun/iqoptionapi.git
+pandas
+python-dotenv
+httpx>=0.28.1
