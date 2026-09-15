@@ -184,25 +184,41 @@ async def procesar_par(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await msg.edit_text(f"❌ Excepción al leer `{par}`: {e}")
 
 async def eco_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Uso: /eco @canal1,@canal2,@canal3 Tu mensaje aquí
+    # O también: /eco @canal1,-100123456789 Tu mensaje aquí
     if len(context.args) < 2:
         await update.message.reply_text(
-            "⚠️ Formato incorrecto.\nUsa: `/eco @NombreDeTuCanal Tu mensaje aquí`",
+            "⚠️ Formato incorrecto.\n"
+            "Usa: `/eco @canal1,@canal2 Mensaje a publicar`\n"
+            "Separa múltiples canales con comas (sin espacios entre ellos).",
             parse_mode=constants.ParseMode.MARKDOWN
         )
         return
 
-    destino_canal = context.args[0]
-    mensaje_a_replicar = " ".join(context.args[1:])
+    destinos = [c.strip() for c in context.args[0].split(",") if c.strip()]
+    mensaje = " ".join(context.args[1:])
 
-    try:
-        await context.bot.send_message(
-            chat_id=destino_canal,
-            text=mensaje_a_replicar,
-            parse_mode=constants.ParseMode.MARKDOWN
-        )
-        await update.message.reply_text(f"✅ Publicado con éxito en `{destino_canal}`.", parse_mode=constants.ParseMode.MARKDOWN)
-    except Exception as e:
-        await update.message.reply_text(f"❌ Error al enviar: {e}\n_(Verifica que el bot sea Administrador con permiso de publicar)_")
+    exitos = []
+    fallos = []
+
+    for canal in destinos:
+        try:
+            await context.bot.send_message(
+                chat_id=canal,
+                text=mensaje,
+                parse_mode=constants.ParseMode.MARKDOWN
+            )
+            exitos.append(canal)
+        except Exception as e:
+            fallos.append(f"{canal} ({e})")
+
+    reporte = []
+    if exitos:
+        reporte.append(f"✅ Enviado a: {', '.join([f'`{c}`' for c in exitos])}")
+    if fallos:
+        reporte.append(f"❌ Falló en: {', '.join(fallos)}")
+
+    await update.message.reply_text("\n".join(reporte), parse_mode=constants.ParseMode.MARKDOWN)
 
 # 5. Arranque
 if __name__ == "__main__":
