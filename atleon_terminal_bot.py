@@ -175,6 +175,25 @@ async def procesar_par(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 f"🎯 **Señal:** {senal}"
             )
             await msg.edit_text(respuesta, parse_mode=constants.ParseMode.MARKDOWN)
+
+# Lista de canales de difusión automática (Principal, Pruebas, Invitados)
+            CANALES_DIFUSION = [
+                "-1004191310034",        # ATLAS1CHANNEL (Principal)
+                # "-100XXXXXXXXXX",      # Canal de Pruebas
+                # "-100YYYYYYYYYY",      # Canal de Invitados
+            ]
+
+            alerta_formateada = f"📡 **ALERTA ATLEON TERMINAL**\n\n{respuesta}"
+
+            for canal_id in CANALES_DIFUSION:
+                try:
+                    await context.bot.send_message(
+                        chat_id=canal_id,
+                        text=alerta_formateada,
+                        parse_mode=constants.ParseMode.MARKDOWN
+                    )
+                except Exception as err:
+                    logging.error(f"Fallo enviando al canal {canal_id}: {err}")
         else:
             await msg.edit_text(
                 f"❌ El par `{par}` no devolvió datos en este momento.",
@@ -182,7 +201,7 @@ async def procesar_par(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
     except Exception as e:
         await msg.edit_text(f"❌ Excepción al leer `{par}`: {e}")
-
+        
 async def eco_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Uso: /eco @canal1,@canal2,@canal3 Tu mensaje aquí
     # O también: /eco @canal1,-100123456789 Tu mensaje aquí
