@@ -183,6 +183,27 @@ async def procesar_par(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         await msg.edit_text(f"❌ Excepción al leer `{par}`: {e}")
 
+async def eco_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if len(context.args) < 2:
+        await update.message.reply_text(
+            "⚠️ Formato incorrecto.\nUsa: `/eco @NombreDeTuCanal Tu mensaje aquí`",
+            parse_mode=constants.ParseMode.MARKDOWN
+        )
+        return
+
+    destino_canal = context.args[0]
+    mensaje_a_replicar = " ".join(context.args[1:])
+
+    try:
+        await context.bot.send_message(
+            chat_id=destino_canal,
+            text=mensaje_a_replicar,
+            parse_mode=constants.ParseMode.MARKDOWN
+        )
+        await update.message.reply_text(f"✅ Publicado con éxito en `{destino_canal}`.", parse_mode=constants.ParseMode.MARKDOWN)
+    except Exception as e:
+        await update.message.reply_text(f"❌ Error al enviar: {e}\n_(Verifica que el bot sea Administrador con permiso de publicar)_")
+
 # 5. Arranque
 if __name__ == "__main__":
     if not TELEGRAM_TOKEN:
@@ -197,5 +218,6 @@ if __name__ == "__main__":
     app.add_handler(CommandHandler("status", status_cmd))
     app.add_handler(CommandHandler("abiertos", abiertos_cmd))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, procesar_par))
+    app.add_handler(CommandHandler("eco", eco_cmd))
 
     app.run_polling()
