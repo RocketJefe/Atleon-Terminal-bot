@@ -179,7 +179,7 @@ async def procesar_par(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # Lista de canales de difusión automática (Principal, Pruebas, Invitados)
             CANALES_DIFUSION = [
                 "-1004191310034",        # ATLAS1CHANNEL (Principal)
-                # "-1003976799805",      # Canal de Pruebas
+                # "-1003976799805",      # Trading En Vivo Hoy
                 # "-100YYYYYYYYYY",      # Canal de Invitados
             ]
 
